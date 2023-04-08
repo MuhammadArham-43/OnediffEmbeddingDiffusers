@@ -87,6 +87,7 @@ LOADABLE_CLASSES = {
         "SchedulerMixin": ["save_pretrained", "from_pretrained"],
         "DiffusionPipeline": ["save_pretrained", "from_pretrained"],
         "OnnxRuntimeModel": ["save_pretrained", "from_pretrained"],
+        # "MultiTokenClipTokenizer": ['save_pretrained','from_pretrained']
     },
     "transformers": {
         "PreTrainedTokenizer": ["save_pretrained", "from_pretrained"],
@@ -367,7 +368,7 @@ def load_sub_model(
         library_name, class_name, importable_classes, pipelines, is_pipeline_module
     )
 
-    load_method_name = None
+    load_method_name = 'from_pretrained'
     # retrive load method name
     for class_name, class_candidate in class_candidates.items():
         if class_candidate is not None and issubclass(class_obj, class_candidate):
@@ -389,6 +390,7 @@ def load_sub_model(
         )
 
     load_method = getattr(class_obj, load_method_name)
+    print(load_method, type(load_method))
 
     # add kwargs to loading method
     loading_kwargs = {}
@@ -970,7 +972,7 @@ class DiffusionPipeline(ConfigMixin):
             # 6.1 - now that JAX/Flax is an official framework of the library, we might load from Flax names
             if class_name.startswith("Flax"):
                 class_name = class_name[4:]
-
+            print(name, library_name, class_name)
             # 6.2 Define all importable classes
             is_pipeline_module = hasattr(pipelines, library_name)
             importable_classes = ALL_IMPORTABLE_CLASSES if is_pipeline_module else LOADABLE_CLASSES[library_name]
